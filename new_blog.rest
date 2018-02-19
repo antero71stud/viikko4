@@ -1,0 +1,9 @@
+POST http://localhost:3013/api/blogs
+Content-Type: application/json
+
+{
+    "title": "iBoot koodin katselmointia",
+    "author": "Antero Oikkonen",
+    "url": "/antero/iboot",
+    "likes": "122"
+}

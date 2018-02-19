@@ -1,0 +1,33 @@
+{
+  "name": "blogilista",
+  "version": "1.0.0",
+  "description": "Viikon 4 harjoitustyö",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \\\"Error: no test specified\\\" && exit 1",
+    "watch": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/antero71stud/viikko4.git"
+  },
+  "keywords": [
+    "blogilista",
+    "viikko4"
+  ],
+  "author": "Antero Oikkonen",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/antero71stud/viikko4/issues"
+  },
+  "homepage": "https://github.com/antero71stud/viikko4#readme",
+  "devDependencies": {
+    "nodemon": "^1.15.0"
+  },
+  "dependencies": {
+    "cors": "^2.8.4",
+    "express": "^4.16.2",
+    "mongoose": "^5.0.6"
+  }
+}
