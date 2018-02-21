@@ -2,8 +2,8 @@ POST http://localhost:3013/api/blogs
 Content-Type: application/json
 
 {
-    "title": "iBoot koodin katselmointia",
+    "title": "controllerin lisäys",
     "author": "Antero Oikkonen",
-    "url": "/antero/iboot",
-    "likes": "122"
+    "url": "https://fullstack-hy.github.io/osa4/",
+    "likes": "0"
 }
