@@ -1,18 +1,11 @@
-const http = require('http')
+//const http = require('http')
 const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
 const cors = require('cors')
 const mongoose = require('mongoose')
+const Blog = require('./models/blogs')
 
-
-
-const Blog = mongoose.model('Blog', {
-  title: String,
-  author: String,
-  url: String,
-  likes: Number
-})
 
 const formatBlog = (blog) => {
   return {
@@ -24,19 +17,19 @@ const formatBlog = (blog) => {
   }
 }
 
-module.exports = Blog
+//module.exports = blog
 
 app.use(cors())
 app.use(bodyParser.json())
 
-const mongoUrl ='mongodb://<username>:<passwd>@ds243008.mlab.com:43008/full-stack-blog'
+const mongoUrl = process.env.MONGODB_URI
 
 
 mongoose.connect(mongoUrl)
 //mongoose.Promise = global.Promise
 
 app.get('/api/blogs', (request, response) => {
-  Blog
+  blog
     .find({})
     .then(blogs => {
         response.json(blogs.map(formatBlog))
@@ -54,6 +47,7 @@ app.post('/api/blogs', (request, response) => {
   if(body.title===undefined || body.author===undefined){
     return response.status(400).json({error: 'title or author missing'})
   }
+
 
   const blog = new Blog({
     title: body.title,
