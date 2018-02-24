@@ -1,2 +1,4 @@
 node_modules
 index_pw.js
+# environment settings
+.env
