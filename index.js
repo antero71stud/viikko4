@@ -20,7 +20,6 @@ mongoose
   })
 
 
-
 app.use(cors())
 app.use(bodyParser.json())
 app.use(express.static('build'))
@@ -28,12 +27,9 @@ app.use(middleware.logger)
 console.log('seuraavaksi router')
 app.use('/api/blogs',blogRouter)
 
-
-app.use(middleware.error)  
+app.use(middleware.error)
 
 const server = http.createServer(app)
-
-
 
 server.listen(config.port, () => {
   console.log(`Server running on port ${config.port}`)
