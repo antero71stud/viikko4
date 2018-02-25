@@ -27,14 +27,19 @@ blogRouter.post('/', (request, response) => {
   console.log('body ',body)
   //console.log('request, ',request)
 
-  if(body.title===undefined || body.author===undefined){
-    return response.status(400).json({ error: 'title or author missing' })
+  if(body.title===undefined || body.title.trim().length===0
+      || body.url===undefined || body.url.trim().length===0)
+  {
+    return response.status(400).json({ error: 'title and url are mandatory field' })
+  }
+
+  if(body.author===undefined || body.author.trim().length===0){
+    return response.status(400).json({ error: 'author missing' })
   }
 
   if(body.likes===undefined){
     body.likes=0
   }
-
 
   const blog = new Blog({
     title: body.title,

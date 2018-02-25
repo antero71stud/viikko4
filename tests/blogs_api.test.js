@@ -66,6 +66,35 @@ test('new blog stored database', async () => {
   expect(titles).toContain('Oma Lego -blogi')
 })
 
+test('new blog without title or url', async () => {
+
+  const newBlog = {
+    author: 'Antero Oikkonen',
+    likes: 0
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(400)
+    .expect('Content-Type',/application\/json/)
+})
+
+test('new blog empty title or url', async () => {
+
+  const newBlog2 = {
+    title: '',
+    author: 'Antero Oikkonen',
+    likes: 0
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog2)
+    .expect(400)
+    .expect('Content-Type',/application\/json/)
+})
+
 test('new blog stored database without likes, likes 0 returned', async () => {
 
   const newBlog = {
@@ -88,8 +117,6 @@ test('new blog stored database without likes, likes 0 returned', async () => {
 
   const blog = response.body.filter(r => r.title==='Tavoitteena maraton')
 
-
-  console.log('',blog.map(a=>a.likes))
   console.log('blog ',blog)
   console.log('blog.likes, ',blog[0].likes)
 

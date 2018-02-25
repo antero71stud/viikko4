@@ -16,8 +16,8 @@ const favoriteBlog = (blogs) => {
   var maxLikes = ( max,cur) => Math.max(max,cur)
 
   const formatBlog = (blog) => {
-    console.log('format blog ',blog)
-    console.log('blog.title ',blog[0].title)
+    //console.log('format blog ',blog)
+    //console.log('blog.title ',blog[0].title)
     return {
       title: blog[0].title,
       author: blog[0].author,
@@ -30,7 +30,7 @@ const favoriteBlog = (blogs) => {
 
   const blog1 = blogs.filter(a => a.likes===numberOfLikes)
 
-  console.log('blog1 ',blog1)
+  //console.log('blog1 ',blog1)
   return formatBlog(blog1)
 }
 
