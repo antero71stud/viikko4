@@ -1,22 +1,31 @@
 const blogRouter = require('express').Router()
 const Blog = require('../models/blogs')
-const mongoose = require('mongoose')
+const formatBlog = require('../utils/blogformat')
 
-const formatBlog = (blog) => {
-  return {
-    title: blog.title,
-    author: blog.author,
-    url: blog.url,
-    likes: blog.likes,
-    id: blog._id
-  }
-}
+
 
 blogRouter.get('/', (request, response) => {
   Blog
     .find({})
     .then(blogs => {
       response.json(blogs.map(formatBlog))
+    })
+
+})
+
+blogRouter.get('/:id', (request, response) => {
+  Blog
+    .findById(request.params.id)
+    .then(blog => {
+      if(blog) {
+        response.json(formatBlog(blog))
+      }else{
+        response.status(404).end()
+      }
+    })
+    .catch(error => {
+      console.log(error)
+      response.status(400).send({ error: 'malformatted id'})
     })
 
 })
@@ -52,6 +61,10 @@ blogRouter.post('/', (request, response) => {
     .save()
     .then(result => {
       response.json(formatBlog(result))
+    })
+    .catch(error => {
+      console.log(error)
+      response.status(500).json({ error: 'something went wrong...' })
     })
 })
 
