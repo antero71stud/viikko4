@@ -52,16 +52,8 @@ describe('when there is initially some blogs saved', async () => {
     const validNonexistingId = await nonExistingId()
 
     await api
-    .get(`/api/blogs/${validNonexistingId}`)
-    .expect(404)
-  })
-
-  test('400 is returned by GET /api/blogs/:id with invalid id', async () => {
-    const invalidId = '7847b2525af34c900a27bc982ddab553'
-
-    const response = await api 
-    .get(`/api/blogs/${invalidId}`)
-    .expect(400)
+      .get(`/api/blogs/${validNonexistingId}`)
+      .expect(404)
   })
 
   describe('addition of a new blog', async () => {
@@ -74,18 +66,18 @@ describe('when there is initially some blogs saved', async () => {
         url: 'http://oikkonen.blogspot.fi',
         likes: 0
       }
-    
+
       await api
         .post('/api/blogs')
         .send(newBlog)
         .expect(200)
         .expect('Content-Type',/application\/json/)
-    
+
       const response = await api
         .get('/api/blogs')
-    
+
       const titles = response.body.map(r => r.title)
-    
+
       expect(response.body.length).toBe(initialBlogs.length + 1)
       expect(titles).toContain('Oma Lego -blogi')
     })
@@ -96,7 +88,7 @@ describe('when there is initially some blogs saved', async () => {
         author: 'Antero Oikkonen',
         likes: 0
       }
-    
+
       await api
         .post('/api/blogs')
         .send(newBlog)
@@ -111,7 +103,7 @@ describe('when there is initially some blogs saved', async () => {
         author: 'Antero Oikkonen',
         likes: 0
       }
-    
+
       await api
         .post('/api/blogs')
         .send(newBlog2)
@@ -126,28 +118,28 @@ describe('when there is initially some blogs saved', async () => {
         author: 'Antero Oikkonen',
         url: 'https://anteronmaraton.blogspot.fi'
       }
-    
+
       await api
         .post('/api/blogs')
         .send(newBlog)
         .expect(200)
         .expect('Content-Type',/application\/json/)
-    
+
       const response = await api
         .get('/api/blogs')
-    
+
       console.log('response.body, ',response.body)
-    
-    
+
+
       const blog = response.body.filter(r => r.title==='Tavoitteena maraton')
-    
+
       console.log('blog ',blog)
       console.log('blog.likes, ',blog[0].likes)
-    
+
       expect(response.body.length).toBe(initialBlogs.length + 2)
       expect(blog[0].title).toEqual('Tavoitteena maraton')
       expect(blog[0].likes).toBe(0)
-    })    
+    })
   })
 })
 

@@ -4,7 +4,7 @@ const formatBlog = require('../utils/blogformat')
 
 
 
-blogRouter.get('/', (request, response) => {
+blogRouter.get('/', async (request, response) => {
   Blog
     .find({})
     .then(blogs => {
@@ -13,59 +13,59 @@ blogRouter.get('/', (request, response) => {
 
 })
 
-blogRouter.get('/:id', (request, response) => {
-  Blog
-    .findById(request.params.id)
-    .then(blog => {
-      if(blog) {
-        response.json(formatBlog(blog))
-      }else{
-        response.status(404).end()
-      }
-    })
-    .catch(error => {
-      console.log(error)
-      response.status(400).send({ error: 'malformatted id'})
-    })
-
+blogRouter.get('/:id', async (request, response) => {
+  try{
+    Blog
+      .findById(request.params.id)
+      .then(blog => {
+        if(blog) {
+          response.json(formatBlog(blog))
+        }else{
+          response.status(404).end()
+        }
+      })
+  }catch(exception) {
+    console.log(exception)
+    response.status(400).send({ error: 'malformatted id' })
+  }
 })
 
-blogRouter.post('/', (request, response) => {
-  const body = request.body
+blogRouter.post('/', async (request, response) => {
+  try{
+    const body = request.body
 
-  console.log('body ',body)
-  //console.log('request, ',request)
+    console.log('body ',body)
+    //console.log('request, ',request)
 
-  if(body.title===undefined || body.title.trim().length===0
+    if(body.title===undefined || body.title.trim().length===0
       || body.url===undefined || body.url.trim().length===0)
-  {
-    return response.status(400).json({ error: 'title and url are mandatory field' })
-  }
+    {
+      return response.status(400).json({ error: 'title and url are mandatory field' })
+    }
 
-  if(body.author===undefined || body.author.trim().length===0){
-    return response.status(400).json({ error: 'author missing' })
-  }
+    if(body.author===undefined || body.author.trim().length===0){
+      return response.status(400).json({ error: 'author missing' })
+    }
 
-  if(body.likes===undefined){
-    body.likes=0
-  }
+    if(body.likes===undefined){
+      body.likes=0
+    }
 
-  const blog = new Blog({
-    title: body.title,
-    author: body.author,
-    url: body.url,
-    likes: Number(body.likes)
-  })
-
-  blog
-    .save()
-    .then(result => {
-      response.json(formatBlog(result))
+    const blog = new Blog({
+      title: body.title,
+      author: body.author,
+      url: body.url,
+      likes: Number(body.likes)
     })
-    .catch(error => {
-      console.log(error)
-      response.status(500).json({ error: 'something went wrong...' })
-    })
+
+    const savedBlog = await blog.save()
+
+    response.json(formatBlog(savedBlog))
+
+  }catch(exception) {
+    console.log(exception)
+    response.status(500).json({ error: 'something went wrong...' })
+  }
 })
 
 module.exports = blogRouter
