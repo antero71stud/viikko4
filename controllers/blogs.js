@@ -17,7 +17,6 @@ blogRouter.get('/', (request, response) => {
     .find({})
     .then(blogs => {
       response.json(blogs.map(formatBlog))
-      mongoose.connection.close()
     })
 
 })
@@ -44,8 +43,6 @@ blogRouter.post('/', (request, response) => {
     .save()
     .then(result => {
       response.json(formatBlog(result))
-      //response.status(201).json(result)
-      mongoose.connection.close()
     })
 })
 
