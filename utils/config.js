@@ -7,7 +7,8 @@ let mongoUrl = process.env.MONGODB_URI
 
 console.log('process.env.NODE_ENV, ',process.env.NODE_ENV)
 
-if (process.env.NODE_ENV === 'test') {
+if (process.env.NODE_ENV === 'test' || 
+    process.env.NODE_ENV === 'development') {
   port = process.env.TEST_PORT
   mongoUrl = process.env.TEST_MONGODB_URI
 }

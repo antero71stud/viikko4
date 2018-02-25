@@ -7,6 +7,7 @@ const mongoose = require('mongoose')
 const middleware = require('./utils/middleware')
 const blogRouter = require('./controllers/blogs')
 const config = require('./utils/config')
+const usersRouter = require('./controllers/users')
 
 mongoose
   .connect(config.mongoUrl)
@@ -24,6 +25,7 @@ app.use(express.static('build'))
 app.use(middleware.logger)
 console.log('seuraavaksi router')
 app.use('/api/blogs',blogRouter)
+app.use('/api/users',usersRouter)
 
 app.use(middleware.error)
 
