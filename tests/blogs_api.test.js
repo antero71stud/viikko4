@@ -209,9 +209,60 @@ describe('when there is initially one user at db', async () => {
 
     const usersAfterOperation = await usersInDb()
     expect(usersAfterOperation.length).toBe(usersBeforeOperation.length+1)
-    const usernames = usersAfterOperation.map(u=>u.username)
+    const usernames = usersAfterOperation.map(u => u.username)
     expect(usernames).toContain(newUser.username)
   })
+
+  test('POST /api/users fail with a short username', async () => {
+    const usersBeforeOperation = await usersInDb()
+
+    const newUser = {
+      username: 'ab',
+      name: 'Antero Oikkonen',
+      adult: true,
+      password: '?salainen1'
+    }
+
+    const response = await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+
+    const usersAfterOperation = await usersInDb()
+    expect(usersAfterOperation.length).toBe(usersBeforeOperation.length)
+  })
+
+  test('POST /api/users set adult correctly', async () => {
+    const usersBeforeOperation = await usersInDb()
+
+    const newUser = {
+      username: 'aoikkon',
+      name: 'Antero Oikkonen',
+      password: '?salainen1'
+    }
+
+    await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
+
+    const response = await api
+      .get('/api/users')
+
+
+    const user = response.body.filter(r => r.username==='aoikkon')
+    console.log('user', user)
+
+    expect(user[0].name).toEqual('Antero Oikkonen')
+    expect(user[0].adult).toBe(true)
+
+
+    const usersAfterOperation = await usersInDb()
+    expect(usersAfterOperation.length).toBe(usersBeforeOperation.length+1)
+  })
+
 })
 
 
