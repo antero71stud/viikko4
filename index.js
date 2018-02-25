@@ -8,12 +8,10 @@ const middleware = require('./utils/middleware')
 const blogRouter = require('./controllers/blogs')
 const config = require('./utils/config')
 
-const mongoUrl = process.env.MONGODB_URI
-
 mongoose
-  .connect(mongoUrl)
+  .connect(config.mongoUrl)
   .then( () => {
-    console.log('connected to database', mongoUrl)
+    console.log('connected to database', config.mongoUrl)
   })
   .catch( err => {
     console.log(err)
