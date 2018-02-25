@@ -114,7 +114,7 @@ describe('favorate blogs', () => {
 
   test('what is favorite of two blogs', () => {
     const result = listHelper.favoriteBlog(twoBlogs)
-    console.log('result ',result)
+    //console.log('result ',result)
     const expectedBlog = formatBlog(twoBlogs[0])
     expect(result).toEqual(expectedBlog)
   })

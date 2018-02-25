@@ -141,19 +141,46 @@ describe('when there is initially some blogs saved', async () => {
       expect(blog[0].likes).toBe(0)
     })
   })
+
+  describe('deletion of a blog', async () => {
+
+    let addedBlog
+
+    beforeAll(async () => {
+      addedBlog = new Blog({
+        title: 'poistotestiin blogi',
+        author: 'Antero Oikkonen',
+        likes: 9,
+        url: 'http://www.google.com'
+      })
+      await addedBlog.save()
+    })
+
+    test('DELETE /api/blogs/:id succeeds with propers statuscode', async () => {
+      const blogsAtStart = await blogsInDb()
+
+      const titlesStart = blogsAtStart.map(r => r.title)
+
+      await console.log('titlesStart, ',titlesStart)
+
+      console.log('addedBlog._id, ', addedBlog._id)
+
+      await api
+        .delete(`/api/blogs/${addedBlog._id}`)
+        .expect(204)
+
+      const blogsAfterDelete = await blogsInDb()
+
+      const titles = blogsAfterDelete.map(b => b.title)
+
+      await console.log('titles, ', titles)
+
+      //expect(addedBlog.title).not.toContain(titles)
+      expect(titles).not.toContain(addedBlog.title)
+      expect(blogsAfterDelete.length).toBe(blogsAtStart.length-1)
+    })
+  })
 })
-
-
-test('initial blog returned',async () => {
-  const response = await api
-    .get('/api/blogs')
-
-  const titles = response.body.map( t => t.title)
-
-  expect(titles).toContain('Owasp top-10 2017')
-})
-
-console.log('POST testin alussa')
 
 afterAll(() => {
   server.close()
