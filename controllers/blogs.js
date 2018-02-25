@@ -31,6 +31,10 @@ blogRouter.post('/', (request, response) => {
     return response.status(400).json({ error: 'title or author missing' })
   }
 
+  if(body.likes===undefined){
+    body.likes=0
+  }
+
 
   const blog = new Blog({
     title: body.title,

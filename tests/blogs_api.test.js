@@ -22,9 +22,6 @@ beforeAll(async () => {
   console.log('initialize done')
 })
 
-
-
-
 console.log('blog_api.test.js tiedostossa')
 
 test('blogs are returned as json',async () => {
@@ -42,9 +39,6 @@ test('initial blog returned',async () => {
 
   expect(titles).toContain('Owasp top-10 2017')
 })
-
-
-
 
 console.log('POST testin alussa')
 
@@ -70,6 +64,38 @@ test('new blog stored database', async () => {
 
   expect(response.body.length).toBe(initialBlogs.length + 1)
   expect(titles).toContain('Oma Lego -blogi')
+})
+
+test('new blog stored database without likes, likes 0 returned', async () => {
+
+  const newBlog = {
+    title: 'Tavoitteena maraton',
+    author: 'Antero Oikkonen',
+    url: 'https://anteronmaraton.blogspot.fi'
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(200)
+    .expect('Content-Type',/application\/json/)
+
+  const response = await api
+    .get('/api/blogs')
+
+  console.log('response.body, ',response.body)
+
+
+  const blog = response.body.filter(r => r.title==='Tavoitteena maraton')
+
+
+  console.log('',blog.map(a=>a.likes))
+  console.log('blog ',blog)
+  console.log('blog.likes, ',blog[0].likes)
+
+  expect(response.body.length).toBe(initialBlogs.length + 2)
+  expect(blog[0].title).toEqual('Tavoitteena maraton')
+  expect(blog[0].likes).toBe(0)
 })
 
 afterAll(() => {
