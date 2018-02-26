@@ -213,6 +213,14 @@ describe('when there is initially one user at db', async () => {
     expect(usernames).toContain(newUser.username)
   })
 
+  test('404 returned by GET /api/user/:id with nonexisting valid id', async () => {
+    const validNonexistingId = await nonExistingUserId()
+
+    await api
+      .get(`/api/user/${validNonexistingId}`)
+      .expect(404)
+  })
+
   test('POST /api/users fail with a short username', async () => {
     const usersBeforeOperation = await usersInDb()
 
@@ -223,7 +231,7 @@ describe('when there is initially one user at db', async () => {
       password: '?salainen1'
     }
 
-    const response = await api
+    await api
       .post('/api/users')
       .send(newUser)
       .expect(400)

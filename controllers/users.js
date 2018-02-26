@@ -16,12 +16,11 @@ usersRouter.post('/', async (request,response) => {
       return response.status(400).json({ error: 'username must be unique' })
     }
 
-    let newadult = false
     if (body.adult === undefined) {
-      newadult=true
-    }else{
-      newadult = body.adult
+      body.adult=true
     }
+
+    console.log('body.adult ',body.adult)
 
     const saltRounds = 10
     const passwordHash = await bcrypt.hash(body.password,saltRounds)
@@ -29,7 +28,7 @@ usersRouter.post('/', async (request,response) => {
     const user = new User({
       username: body.username,
       name: body.name,
-      adult: newadult,
+      adult: body.adult,
       passwordHash
     })
 
@@ -55,6 +54,7 @@ const formatUser = (user) => {
     id: user.id,
     username: user.username,
     name: user.name,
+    adult: user.adult,
     notes: user.notes
   }
 }
