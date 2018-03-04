@@ -1,41 +1,47 @@
-const Blog = require('../models/blogs')
+const Blog = require('../models/blog')
 const User = require('../models/user')
-const format = require('../utils/blogformat')
 
 const initialBlogs = [
   {
-    title: 'Owasp top-10 2017',
-    author: 'Andrew van der Stock',
-    link: 'https://www.owasp.org/index.php/Top_10-2017_Top_10'
-  }
+    title: "React patterns",
+    author: "Michael Chan",
+    url: "https://reactpatterns.com/",
+    likes: 7,
+  },
+  {
+    title: "Go To Statement Considered Harmful",
+    author: "Edsger W. Dijkstra",
+    url: "http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html",
+    likes: 5,
+  },
 ]
 
-const nonExistingId = async () => {
-  const blog = new Blog()
-  await blog.save()
-  await blog.remove()
-
-  return blog._id.toString()
-}
-
-const nonExistingUserId = async () => {
-  const user = new User()
-  await user.save()
-  await user.remove()
-
-  return user._id.toString()
+const filter = (blog) => {
+  return {
+    title: blog.title,
+    author: blog.author,
+    likes: blog.likes,
+    url: blog.url,
+  }
 }
 
 const blogsInDb = async () => {
-  const blogs = await Blog.find({})
-  return blogs.map(format)
+  return await Blog.find({})
+}
+
+const filterUser = (user) => {
+  return {
+    name: user.name,
+    username: user.username,
+    adult: user.adult
+  }
 }
 
 const usersInDb = async () => {
   const users = await User.find({})
-  return users
+  return users.map(filterUser)
 }
 
 module.exports = {
-  initialBlogs, nonExistingId, nonExistingUserId, blogsInDb, usersInDb
+  filter, blogsInDb, initialBlogs, usersInDb
 }

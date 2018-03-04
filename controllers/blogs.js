@@ -1,87 +1,88 @@
 const blogRouter = require('express').Router()
-const Blog = require('../models/blogs')
-const formatBlog = require('../utils/blogformat')
-
-
+const jwt = require('jsonwebtoken')
+const Blog = require('../models/blog')
+const User = require('../models/user')
 
 blogRouter.get('/', async (request, response) => {
-  Blog
+  const blogs = await Blog
     .find({})
-    .then(blogs => {
-      response.json(blogs.map(formatBlog))
-    })
+    .populate('user', {username: 1, name: 1})
 
-})
-
-blogRouter.get('/:id', async (request, response) => {
-  try{
-    Blog
-      .findById(request.params.id)
-      .then(blog => {
-        if(blog) {
-          response.json(formatBlog(blog))
-        }else{
-          response.status(404).end()
-        }
-      })
-  }catch(exception) {
-    console.log(exception)
-    response.status(400).send({ error: 'malformatted id' })
-  }
+  response.json(blogs)
 })
 
 blogRouter.post('/', async (request, response) => {
-  try{
-    const body = request.body
+  const { title, author, url, likes } = request.body
 
-    console.log('body ',body)
-    //console.log('request, ',request)
+  try {
+    const token = request.token
+    const decodedToken = jwt.verify(token, process.env.SECRET)
 
-    if(body.title===undefined || body.title.trim().length===0
-      || body.url===undefined || body.url.trim().length===0)
-    {
-      return response.status(400).json({ error: 'title and url are mandatory field' })
+    if (!token || !decodedToken.id) {
+      return response.status(401).json({ error: 'token missing or invalid' })
     }
 
-    if(body.author===undefined || body.author.trim().length===0){
-      return response.status(400).json({ error: 'author missing' })
+    if (title === undefined ||  url === undefined) {
+      return response.status(400).json({ error: 'url or title missing'})
     }
 
-    if(body.likes===undefined){
-      body.likes=0
+    const user = await User.findById(decodedToken.id)
+
+    const blog = new Blog({ title, author, url, likes: (likes || 0), user: user._id } )
+
+    const result = await blog.save()
+
+    user.blogs = user.blogs.concat(blog._id)
+    await user.save()
+
+    response.status(201).json(result)
+  } catch (exception) {
+    if (exception.name === 'JsonWebTokenError') {
+      response.status(401).json({ error: exception.message })
+    } else {
+      console.log(exception)
+      response.status(500).json({ error: 'something went wrong...' })
     }
-
-    const blog = new Blog({
-      title: body.title,
-      author: body.author,
-      url: body.url,
-      likes: Number(body.likes)
-    })
-
-    const savedBlog = await blog.save()
-
-    response.json(formatBlog(savedBlog))
-
-  }catch(exception) {
-    console.log(exception)
-    response.status(500).json({ error: 'something went wrong...' })
   }
 })
 
-blogRouter.delete('/:id', async (request,response) => {
-  try{
-    await Blog.findByIdAndRemove(request.params.id, function(err){
-      if(err)
-        response.status(400).send({ error: 'malformed id' })
-      else
-        response.status(204).json({ message: 'blog deleted' } )
-    })
+blogRouter.delete('/:id', async (request, response) => {
+  const blog = await Blog.findById(request.params.id)
 
+  try {
+    const token = request.token
+    const decodedToken = jwt.verify(token, process.env.SECRET)
+
+    if (!token || !decodedToken.id) {
+      return response.status(401).json({ error: 'token missing or invalid' })
+    }
+    
+    console.log(blog.user, decodedToken.id)
+
+    if (decodedToken.id.toString() !== blog.user.toString()) {
+      return response.status(400).json({ error: 'only creator can delete a blog' })
+    }
+
+    if (blog) {
+      await blog.remove()
+    }
+    
     response.status(204).end()
-  }catch(exception){
-    console.log(exception)
-    response.status(400).send({ error: 'malformed id' })
+  } catch (exception) {
+    if (exception.name === 'JsonWebTokenError') {
+      response.status(401).json({ error: exception.message })
+    } else {
+      console.log(exception)
+      response.status(500).json({ error: 'something went wrong...' })
+    }
   }
+})
+
+blogRouter.put('/:id', async (request, response) => {
+  const { title, author, url, likes } = request.body
+  const blog = await Blog.findByIdAndUpdate(request.params.id, { title, author, url, likes } , {new: true})
+  
+  response.send(blog)
 })
 
 module.exports = blogRouter

@@ -4,30 +4,32 @@ const app = express()
 const bodyParser = require('body-parser')
 const cors = require('cors')
 const mongoose = require('mongoose')
-const middleware = require('./utils/middleware')
+
+const loginRouter = require('./controllers/login')
 const blogRouter = require('./controllers/blogs')
-const config = require('./utils/config')
 const usersRouter = require('./controllers/users')
+const config = require('./utils/config')
 
-mongoose
-  .connect(config.mongoUrl)
-  .then( () => {
-    console.log('connected to database', config.mongoUrl)
-  })
-  .catch( err => {
-    console.log(err)
-  })
+const extractToken = (request, response, next) => {
+  const authorization = request.get('authorization')
+  if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
+    request.token = authorization.substring(7)
+  }
+
+  next()
+}
 
 
+app.use(extractToken)
 app.use(cors())
 app.use(bodyParser.json())
-app.use(express.static('build'))
-app.use(middleware.logger)
-console.log('seuraavaksi router')
-app.use('/api/blogs',blogRouter)
-app.use('/api/users',usersRouter)
 
-app.use(middleware.error)
+mongoose.connect(config.mongoUrl)
+mongoose.Promise = global.Promise
+
+app.use('/api/login', loginRouter)
+app.use('/api/users', usersRouter)
+app.use('/api/blogs', blogRouter)
 
 const server = http.createServer(app)
 

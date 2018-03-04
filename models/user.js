@@ -1,22 +1,25 @@
-
 const mongoose = require('mongoose')
 
 const userSchema = new mongoose.Schema({
   username: String,
   name: String,
+  passwordHash: String,
   adult: Boolean,
-  passwordHash: String
+  blogs: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Blog' }]
 })
 
 userSchema.statics.format = (user) => {
   return {
-    id: user.id,
+    _id: user._id,
     username: user.username,
     name: user.name,
+    blogs: user.blogs,
     adult: user.adult
   }
 }
 
-const User = mongoose.model('User',userSchema)
-
+// koska käytän samaa kantaa kuin eräässä toisessa sovelluksessa
+// jossa myös Users-kokoelma, talletan tämän sovelluksen 
+// käyttäjät kokoelmaan BlogUsers
+const User = mongoose.model('User', userSchema)
 module.exports = User
