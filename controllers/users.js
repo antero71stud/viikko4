@@ -17,7 +17,7 @@ usersRouter.post('/', async (request, response) => {
       return response.status(400).json({ error: 'password too short' })
     }
 
-    const existing = await User.findOne({username})
+    const existing = await User.findOne({ username })
     if (existing) {
       return response.status(400).json({ error: 'username must be unique' })
     }

@@ -6,7 +6,7 @@ const User = require('../models/user')
 blogRouter.get('/', async (request, response) => {
   const blogs = await Blog
     .find({})
-    .populate('user', {username: 1, name: 1})
+    .populate('user', { username: 1, name: 1 })
 
   response.json(blogs)
 })
@@ -23,7 +23,7 @@ blogRouter.post('/', async (request, response) => {
     }
 
     if (title === undefined ||  url === undefined) {
-      return response.status(400).json({ error: 'url or title missing'})
+      return response.status(400).json({ error: 'url or title missing' })
     }
 
     const user = await User.findById(decodedToken.id)
@@ -56,7 +56,7 @@ blogRouter.delete('/:id', async (request, response) => {
     if (!token || !decodedToken.id) {
       return response.status(401).json({ error: 'token missing or invalid' })
     }
-    
+
     console.log(blog.user, decodedToken.id)
 
     if (decodedToken.id.toString() !== blog.user.toString()) {
@@ -66,7 +66,7 @@ blogRouter.delete('/:id', async (request, response) => {
     if (blog) {
       await blog.remove()
     }
-    
+
     response.status(204).end()
   } catch (exception) {
     if (exception.name === 'JsonWebTokenError') {
@@ -80,8 +80,8 @@ blogRouter.delete('/:id', async (request, response) => {
 
 blogRouter.put('/:id', async (request, response) => {
   const { title, author, url, likes } = request.body
-  const blog = await Blog.findByIdAndUpdate(request.params.id, { title, author, url, likes } , {new: true})
-  
+  const blog = await Blog.findByIdAndUpdate(request.params.id, { title, author, url, likes } , { new: true })
+
   response.send(blog)
 })
 
